@@ -8,12 +8,16 @@ using System.Text;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using UnityEngine;
+using UnityEngine.UI;
+
+using TMPro;
 
 public class HttpReceiver : MonoBehaviour
 {
 
-    HttpListener listener = new HttpListener();
-    private Thread listenerThread;
+    HttpListener listener = null;// new HttpListener();
+    private Thread listenerThread = null;
 
     [System.Serializable]
     public class OnGetReqeustRevent : UnityEvent<HttpListenerContext> { }
@@ -23,40 +27,23 @@ public class HttpReceiver : MonoBehaviour
     public class OnPostReqeustRevent : UnityEvent<HttpListenerContext> { }
     public OnPostReqeustRevent OnPostRequest;
 
+    [SerializeField]
+    public TMP_InputField httpPortInputField;
+
     // Start is called before the first frame update
     void Start()
     {
-        string url = "http://localhost:8080/";
-        listener.Prefixes.Add(url);
-        listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
-        listener.Start();
-
-        listenerThread = new Thread(startListener);
-        listenerThread.Start();
-
-        Console.WriteLine("Listening on {0}", url);
-
+        StartHttpListen();
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*HttpListenerContext context = listener.GetContext();
-        HttpListenerRequest request = context.Request;
-        HttpListenerResponse response = context.Response;
-
-        Console.WriteLine("{0} {1}", request.HttpMethod, request.Url);
-
-        byte[] buffer = System.Text.Encoding.UTF8.GetBytes("Hello, World!");
-        response.ContentLength64 = buffer.Length;
-        response.OutputStream.Write(buffer, 0, buffer.Length);
-        response.OutputStream.Close();*/
     }
 
     void OnDestory()
     {
-        listener.Stop();
-        listenerThread.Join();
+        StopHttpListen();
     }
 
     private void startListener()
@@ -130,5 +117,46 @@ public class HttpReceiver : MonoBehaviour
             Console.Error.Write(e);
             response.Abort();
         }
+    }
+
+    public void StartHttpListen()
+    {
+        //Console.WriteLine("http port {0}", httpPortInputField.text);
+        //int port = System.Convert.ToInt32(httpPortInputFieldText.text);// 9090;
+        String portStr = httpPortInputField.text.Trim();
+        Debug.Log(portStr);
+
+        //int.TryParse(portStr, out port);
+
+        string url = "http://localhost:" + portStr + "/";
+        string url2 = "http://127.0.0.1:" + portStr + "/";
+        Debug.Log(url);
+        Debug.Log(url2);
+        listener = new HttpListener();
+        listener.Prefixes.Add(url);
+        listener.Prefixes.Add(url2);
+        listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
+        listener.Start();
+
+        listenerThread = new Thread(startListener);
+        listenerThread.Start();
+
+        Console.WriteLine("Listening on {0}", url);
+    }
+
+    public void StopHttpListen()
+    {
+        if(listener != null)
+        {
+            listener.Stop();
+        }
+
+        if (listenerThread != null)
+        {
+            listenerThread.Join();
+        }
+
+        listener = null;
+        listenerThread = null;
     }
 }
