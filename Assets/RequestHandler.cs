@@ -2,19 +2,86 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
+using UnityEngine.UI;
+
+
+using TMPro;
+
 
 public class RequestHandler : MonoBehaviour
 {
+    public float timer = 0.0f;
+    public int seconds;
+
+    bool teamTextOnFlag = false;
+    int limitSeconds = 10;
+
+    [SerializeField]
+    public TMP_InputField delayInputField;
+
+    TMP_Text teamText = null;
+    public TMP_Text winText = null;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        GameObject obj = GameObject.Find("TeamText");
+        teamText = obj.GetComponent<TMP_Text>();
+        ClearTeamText();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(teamTextOnFlag == true)
+        {
+            // seconds in float
+            timer += Time.deltaTime;
+            // turn seconds in float to int
+            seconds = (int)(timer % 60);
+            //print(seconds);
+            if (limitSeconds <= seconds)
+            {
+                ClearTeamText();
+            }
+        }
+    }
+
+    public void ClearTeamText()
+    {
+        timer = 0.0f;
+        seconds = 0;
+        teamText.text = "";
+        teamTextOnFlag = false;
+
+    }
+
+    public bool RequestProc(string key, string val)
+    {
+        if (key != "sig") return false;
+
+        Debug.Log("sig in");
+        if (teamText.text.Trim() != "") return false;
+
+        Debug.Log("val : "+val);
+        GameObject obj = GameObject.Find("Team" + val + "InputField");
+        if (obj == null) return false;
+        TMP_InputField teamNameInputField = obj.GetComponent<TMP_InputField>();
+        if (teamNameInputField == null) return false;
+
+        Debug.Log("db1");
+
+        teamText.text = teamNameInputField.text;
+        teamTextOnFlag = true;
+        timer = 0.0f;
+        seconds = 0;
         
+        winText.text = "";
+
+        Debug.Log("db2");
+        limitSeconds = System.Convert.ToInt32(delayInputField.text.Trim());
+        Debug.Log("db3");
+        return true;
     }
 
     public void OnGetRequest(HttpListenerContext context)
@@ -25,22 +92,29 @@ public class RequestHandler : MonoBehaviour
         response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = "text/plain";// = "application/json";
 
+        string res = "N";
         if (request.QueryString.AllKeys.Length > 0)
         {
             foreach(var key in request.QueryString.AllKeys)
             {
                 object value = request.QueryString.GetValues(key)[0];
-                Debug.Log("Key : " + key + ", value:" + value);
+                /*Debug.Log("Key : " + key + ", value:" + value);
                 switch (key)
                 {
                     case "GetData":
                         break;
+                }*/
+                if(RequestProc(key, "" + value))
+                {
+                    res = "Y";
                 }
+
+                break;
             }
         }
 
 
-        response.Close( System.Text.Encoding.UTF8.GetBytes("Hello Get") ,false);
+        response.Close( System.Text.Encoding.UTF8.GetBytes(res) ,false);
     }
 
 
@@ -51,20 +125,28 @@ public class RequestHandler : MonoBehaviour
         response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = "text/plain";// = "application/json";
 
+        string res = "N";
         if (request.QueryString.AllKeys.Length > 0)
         {
             foreach (var key in request.QueryString.AllKeys)
             {
                 object value = request.QueryString.GetValues(key)[0];
-                Debug.Log("Key : " + key + ", value:" + value);
+                /*Debug.Log("Key : " + key + ", value:" + value);
                 switch (key)
                 {
                     case "GetData":
                         break;
+                }*/
+                if (RequestProc(key, "" + value))
+                {
+                    res = "Y";
                 }
+
+                break;
             }
         }
 
-        response.Close(System.Text.Encoding.UTF8.GetBytes("Hello Post"), false);
+
+        response.Close(System.Text.Encoding.UTF8.GetBytes(res), false);
     }
 }

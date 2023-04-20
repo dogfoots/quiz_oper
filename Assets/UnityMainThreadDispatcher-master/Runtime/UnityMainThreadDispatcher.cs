@@ -97,7 +97,8 @@ public class UnityMainThreadDispatcher : MonoBehaviour {
 	}
 
 	public static UnityMainThreadDispatcher Instance() {
-		if (!Exists ()) {
+        
+        if (!Exists ()) {
 			throw new Exception ("UnityMainThreadDispatcher could not find the UnityMainThreadDispatcher object. Please ensure you have added the MainThreadExecutor Prefab to your scene.");
 		}
 		return _instance;
