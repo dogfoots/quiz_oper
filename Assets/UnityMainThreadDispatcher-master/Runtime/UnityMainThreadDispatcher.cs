@@ -29,6 +29,7 @@ public class UnityMainThreadDispatcher : MonoBehaviour {
 
 	private static readonly Queue<Action> _executionQueue = new Queue<Action>();
 
+
 	public void Update() {
 		lock(_executionQueue) {
 			while (_executionQueue.Count > 0) {
@@ -97,19 +98,21 @@ public class UnityMainThreadDispatcher : MonoBehaviour {
 	}
 
 	public static UnityMainThreadDispatcher Instance() {
-        
         if (!Exists ()) {
 			throw new Exception ("UnityMainThreadDispatcher could not find the UnityMainThreadDispatcher object. Please ensure you have added the MainThreadExecutor Prefab to your scene.");
 		}
 		return _instance;
 	}
 
-
-	void Awake() {
+	public void CreateInstance(){
 		if (_instance == null) {
 			_instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
+	}
+
+	void Awake() {
+		CreateInstance();
 	}
 
 	void OnDestroy() {

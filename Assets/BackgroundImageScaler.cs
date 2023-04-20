@@ -15,7 +15,7 @@ public class BackgroundImageScaler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.gameObject.transform.localScale += new Vector3(sign*0.000005f, sign * 0.000005f, 0);
+        this.gameObject.transform.localScale += new Vector3(sign*0.00001f, sign * 0.00001f, 0);
 
         k++;
         if(k == 10000)

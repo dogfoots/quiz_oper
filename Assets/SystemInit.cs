@@ -19,12 +19,14 @@ public class SystemInit : MonoBehaviour
 
 
     public RequestHandler requestHandler;
+    public UnityMainThreadDispatcher unityMainThreadDispatcher;
 
     float startY = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
         Application.runInBackground = true;
+        unityMainThreadDispatcher.CreateInstance();
         
         GameObject obj = GameObject.Find("WinInputField");
         winInputField = obj.GetComponent<TMP_InputField>();
