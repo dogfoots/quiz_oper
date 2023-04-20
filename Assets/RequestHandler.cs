@@ -22,11 +22,16 @@ public class RequestHandler : MonoBehaviour
     TMP_Text teamText = null;
     public TMP_Text winText = null;
 
+    AudioSource meSound=null;
     // Start is called before the first frame update
     void Start()
     {
         GameObject obj = GameObject.Find("TeamText");
         teamText = obj.GetComponent<TMP_Text>();
+
+        obj = GameObject.Find("MeSound");
+        meSound = obj.GetComponent<AudioSource>();
+
         ClearTeamText();
     }
 
@@ -69,7 +74,7 @@ public class RequestHandler : MonoBehaviour
         TMP_InputField teamNameInputField = obj.GetComponent<TMP_InputField>();
         if (teamNameInputField == null) return false;
 
-        Debug.Log("db1");
+        //Debug.Log("db1");
 
         teamText.text = teamNameInputField.text;
         teamTextOnFlag = true;
@@ -78,9 +83,11 @@ public class RequestHandler : MonoBehaviour
         
         winText.text = "";
 
-        Debug.Log("db2");
+        //Debug.Log("db2");
         limitSeconds = System.Convert.ToInt32(delayInputField.text.Trim());
-        Debug.Log("db3");
+        //Debug.Log("db3");
+
+        meSound.Play();
         return true;
     }
 

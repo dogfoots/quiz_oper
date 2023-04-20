@@ -17,6 +17,8 @@ public class SystemInit : MonoBehaviour
     TMP_InputField winInputField = null;
     TMP_InputField failInputField  = null;
 
+    AudioSource okSound=null;
+    AudioSource noSound=null;
 
     public RequestHandler requestHandler;
     public UnityMainThreadDispatcher unityMainThreadDispatcher;
@@ -32,6 +34,13 @@ public class SystemInit : MonoBehaviour
         winInputField = obj.GetComponent<TMP_InputField>();
         obj = GameObject.Find("FailInputField");
         failInputField = obj.GetComponent<TMP_InputField>();
+
+        obj = GameObject.Find("OkSound");
+        okSound = obj.GetComponent<AudioSource>();
+        
+        obj = GameObject.Find("NoSound");
+        noSound = obj.GetComponent<AudioSource>();
+        
 
         obj = GameObject.Find("TeamText");
         teamText = obj.GetComponent<TMP_Text>();
@@ -127,6 +136,7 @@ public class SystemInit : MonoBehaviour
             seconds = 0;
             timer = 0.0f;
             winTextFlag = true;
+            noSound.Play();
         }
     
         if (Event.current.Equals(Event.KeyboardEvent(KeyCode.Alpha1.ToString()))||
@@ -138,6 +148,7 @@ public class SystemInit : MonoBehaviour
             seconds = 0;
             timer = 0.0f;
             winTextFlag = true;
+            okSound.Play();
         }
 
 
