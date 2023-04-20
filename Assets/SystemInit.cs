@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 
 public class SystemInit : MonoBehaviour
@@ -51,6 +53,9 @@ public class SystemInit : MonoBehaviour
     public float timer = 0.0f;
     int seconds = 0;
     bool winTextFlag = false;
+
+    float refreshTimer = 0.0f;
+
     // Update is called once per frame
     void Update()
     {
@@ -70,6 +75,14 @@ public class SystemInit : MonoBehaviour
             }
         }
         
+
+        refreshTimer += Time.deltaTime;
+        int refreshSeconds = (int)(refreshTimer % 60);
+        
+        if(refreshSeconds > 5){
+            refreshScores();
+            refreshTimer = 0;
+        }
     }
 
     void OnGUI()
@@ -125,5 +138,33 @@ public class SystemInit : MonoBehaviour
             winTextFlag = true;
         }
 
+
+
+        if (Event.current.Equals(Event.KeyboardEvent(KeyCode.R.ToString())))
+        {
+            Debug.Log("R key is pressed.");
+            refreshScores();
+        }
+    }
+
+    void refreshScores(){
+        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        string filePath = Path.Combine(desktopPath, "score.json");
+
+        if (File.Exists(filePath))
+        {
+            string scoreText = File.ReadAllText(filePath);
+            Debug.Log(scoreText);
+            JObject jsonObj = JObject.Parse(scoreText);
+
+            for(int i=0;i<4;i++){
+                int score = (int)jsonObj[""+(i+1)];
+                Debug.Log("score " +score);
+            }
+        }
+        else
+        {
+            Debug.LogError("score.json 파일이 존재하지 않습니다.");
+        }
     }
 }
