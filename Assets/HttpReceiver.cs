@@ -130,11 +130,17 @@ public class HttpReceiver : MonoBehaviour
 
         string url = "http://localhost:" + portStr + "/";
         string url2 = "http://127.0.0.1:" + portStr + "/";
+        //string url3 = "http://192.168.35.96:" + portStr + "/";
+        string url4 = "http://192.168.100.101:" + portStr + "/";
         Debug.Log(url);
         Debug.Log(url2);
+        //Debug.Log(url3);
+        Debug.Log(url4);
         listener = new HttpListener();
         listener.Prefixes.Add(url);
         listener.Prefixes.Add(url2);
+        //listener.Prefixes.Add(url3);
+        listener.Prefixes.Add(url4);
         listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
         listener.Start();
 
