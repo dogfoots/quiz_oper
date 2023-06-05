@@ -12,6 +12,7 @@ public class SystemInit : MonoBehaviour
 {
     JObject scoreJsonObj = null;
     GameObject teamScoreView = null;
+    GameObject effectGround = null;
     
     GameObject teamScore1Grp = null;
     GameObject teamScore2Grp = null;
@@ -50,7 +51,8 @@ public class SystemInit : MonoBehaviour
     {
         Application.runInBackground = true;
         unityMainThreadDispatcher.CreateInstance();
-        
+        effectGround =  GameObject.Find("EffectGround");
+
         teamScoreView = GameObject.Find("TeamScores");
         
         teamScore1Grp = GameObject.Find("TeamScore1Grp");
@@ -95,7 +97,7 @@ public class SystemInit : MonoBehaviour
         obj = GameObject.Find("WinText");
         winText = obj.GetComponent<TMP_Text>();
 
-        
+        AddTextEffect("hi!");
     }
 
 
@@ -166,6 +168,18 @@ public class SystemInit : MonoBehaviour
             refreshTimer = 0;
         }
     }
+
+    public void AddTextEffect(string text){
+        GameObject effectText = new GameObject("EffectText");
+        effectText.AddComponent<CanvasRenderer>();
+        effectText.AddComponent<TextMeshProUGUI>();
+        effectText.transform.parent = effectGround.transform;
+        effectText.transform.position = new Vector3((Screen.width/2) + UnityEngine.Random.Range(-25.0f,25.0f), 100, 0);
+       
+        effectText.GetComponent<TMP_Text>().text = text;
+
+    }
+
     protected void setScoreText(int score, int val){
         GameObject obj = GameObject.Find("ScoreText" + val);
         TMP_Text text = obj.GetComponent<TMP_Text>();
