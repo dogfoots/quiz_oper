@@ -6175,6 +6175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   requestHandler: {fileID: 997876433}
   unityMainThreadDispatcher: {fileID: 215873949}
+  effectFontTMP: {fileID: 11400000, guid: 372295b21c5a34f468bb152e7780c430, type: 2}
   timer: 0
 --- !u!1 &1687649583
 GameObject:

@@ -45,6 +45,8 @@ public class SystemInit : MonoBehaviour
     public RequestHandler requestHandler;
     public UnityMainThreadDispatcher unityMainThreadDispatcher;
 
+    public TMP_FontAsset effectFontTMP;
+
     float startY = 0.0f;
     // Start is called before the first frame update
     void Start()
@@ -169,15 +171,28 @@ public class SystemInit : MonoBehaviour
         }
     }
 
-    public void AddTextEffect(string text){
-        GameObject effectText = new GameObject("EffectText");
-        effectText.AddComponent<CanvasRenderer>();
-        effectText.AddComponent<TextMeshProUGUI>();
-        effectText.transform.parent = effectGround.transform;
-        effectText.transform.position = new Vector3((Screen.width/2) + UnityEngine.Random.Range(-25.0f,25.0f), 100, 0);
-       
-        effectText.GetComponent<TMP_Text>().text = text;
+    class EffectText{
+        GameObject gameObject = null;
 
+        public void make(string text, GameObject effectGround, TMP_FontAsset effectFontTMP){
+            gameObject = new GameObject("EffectText");
+            gameObject.AddComponent<CanvasRenderer>();
+            gameObject.AddComponent<TextMeshProUGUI>();
+            gameObject.transform.parent = effectGround.transform;
+            gameObject.transform.position = new Vector3((Screen.width/2) + UnityEngine.Random.Range(-25.0f,25.0f), 100, 0);
+
+            TextMeshProUGUI tmp = gameObject.GetComponent<TextMeshProUGUI>();
+            tmp.font = effectFontTMP;
+            tmp.fontSize = 36;
+            tmp.fontSharedMaterial = effectFontTMP.material;
+
+            gameObject.GetComponent<TMP_Text>().text = text;
+        }
+    }
+
+    public void AddTextEffect(string text){
+        EffectText ef = new EffectText();
+        ef.make(text, effectGround, effectFontTMP);
     }
 
     protected void setScoreText(int score, int val){
