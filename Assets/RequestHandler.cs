@@ -13,7 +13,7 @@ public class RequestHandler : MonoBehaviour
     public float timer = 0.0f;
     public int seconds;
 
-    bool teamTextOnFlag = false;
+    public bool teamTextOnFlag = false;
     int limitSeconds = 10;
 
     [SerializeField]
@@ -58,7 +58,12 @@ public class RequestHandler : MonoBehaviour
         seconds = 0;
         teamText.text = "";
         teamTextOnFlag = false;
+    }
 
+    public void ShowTeamText(string text){
+        ClearTeamText();
+        teamText.text = text ;
+        teamTextOnFlag = true;
     }
 
     public bool RequestProc(string key, string val)
@@ -73,17 +78,8 @@ public class RequestHandler : MonoBehaviour
         if (obj == null) return false;
         TMP_InputField teamNameInputField = obj.GetComponent<TMP_InputField>();
         if (teamNameInputField == null) return false;
+        ShowTeamText(teamNameInputField.text);
 
-        //Debug.Log("db1");
-
-        teamText.text = teamNameInputField.text;
-        teamTextOnFlag = true;
-        timer = 0.0f;
-        seconds = 0;
-        
-        winText.text = "";
-
-        //Debug.Log("db2");
         limitSeconds = System.Convert.ToInt32(delayInputField.text.Trim());
         //Debug.Log("db3");
 

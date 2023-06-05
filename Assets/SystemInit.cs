@@ -3,13 +3,34 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
+using TMPro;
 
 public class SystemInit : MonoBehaviour
 {
+    JObject scoreJsonObj = null;
+    GameObject teamScoreView = null;
+    
+    GameObject teamScore1Grp = null;
+    GameObject teamScore2Grp = null;
+    GameObject teamScore3Grp = null;
+    GameObject teamScore4Grp = null;
+
+    TMP_Text score1 = null;
+    TMP_Text scoreTitle1 = null;
+    
+    TMP_Text score2 = null;
+    TMP_Text scoreTitle2 = null;
+    
+    TMP_Text score3 = null;
+    TMP_Text scoreTitle3 = null;
+    
+    TMP_Text score4 = null;
+    TMP_Text scoreTitle4 = null;
+
+
     GameObject settingDlg = null;
     TMP_Text teamText = null;
     TMP_Text winText = null;
@@ -30,6 +51,23 @@ public class SystemInit : MonoBehaviour
         Application.runInBackground = true;
         unityMainThreadDispatcher.CreateInstance();
         
+        teamScoreView = GameObject.Find("TeamScores");
+        
+        teamScore1Grp = GameObject.Find("TeamScore1Grp");
+        teamScore2Grp = GameObject.Find("TeamScore2Grp");
+        teamScore3Grp = GameObject.Find("TeamScore3Grp");
+        teamScore4Grp = GameObject.Find("TeamScore4Grp");
+
+        scoreTitle1 = GameObject.Find("ScoreTitleText1").GetComponent<TMP_Text>();
+        score1 = GameObject.Find("ScoreText1").GetComponent<TMP_Text>();
+        scoreTitle2 = GameObject.Find("ScoreTitleText2").GetComponent<TMP_Text>();
+        score2 = GameObject.Find("ScoreText2").GetComponent<TMP_Text>();
+        scoreTitle3 = GameObject.Find("ScoreTitleText3").GetComponent<TMP_Text>();
+        score3 = GameObject.Find("ScoreText3").GetComponent<TMP_Text>();
+        scoreTitle4 = GameObject.Find("ScoreTitleText4").GetComponent<TMP_Text>();
+        score4 = GameObject.Find("ScoreText4").GetComponent<TMP_Text>();
+
+
         GameObject obj = GameObject.Find("WinInputField");
         winInputField = obj.GetComponent<TMP_InputField>();
         obj = GameObject.Find("FailInputField");
@@ -70,6 +108,7 @@ public class SystemInit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //뭔가가 떠있으면 나타나면 점수현황 안됨.
         if(winTextFlag == true)
         {
             // seconds in float
@@ -86,7 +125,39 @@ public class SystemInit : MonoBehaviour
             }
         }
         
+        if(winTextFlag == false &&
+            requestHandler.teamTextOnFlag == false ){
+            //점수현황 표시할것
+            RectTransform rf = teamScoreView.GetComponent<RectTransform>();
+            rf.sizeDelta = new Vector2(Screen.width , Screen.height);
 
+            teamScore1Grp.transform.position = new Vector3(0, Screen.height, teamScore1Grp.transform.position.z);
+            teamScore2Grp.transform.position = new Vector3(Screen.width, Screen.height, teamScore2Grp.transform.position.z);
+            teamScore3Grp.transform.position = new Vector3(0, 0, teamScore3Grp.transform.position.z);
+            teamScore4Grp.transform.position = new Vector3(Screen.width, 0, teamScore4Grp.transform.position.z);
+            //Debug.Log("d : "+teamScoreView.GetComponent<RectTransform>().rect.width);
+            //Debug.Log("d : "+teamScore1Grp.transform.position);
+            
+            refreshTeamName(1, scoreTitle1);
+            refreshTeamName(2, scoreTitle2);
+            refreshTeamName(3, scoreTitle3);
+            refreshTeamName(4, scoreTitle4);
+
+            teamScoreView.transform.position = new Vector3(0, teamScoreView.transform.position.y, teamScoreView.transform.position.z);
+
+            if(scoreJsonObj != null){
+                setScoreText((int)scoreJsonObj["1"],1);
+                setScoreText((int)scoreJsonObj["2"],2);
+                setScoreText((int)scoreJsonObj["3"],3);
+                setScoreText((int)scoreJsonObj["4"],4);
+            }
+
+        }else{
+            teamScoreView.transform.position = new Vector3(-8192, teamScoreView.transform.position.y, teamScoreView.transform.position.z);
+        }
+
+
+        //점수현황 갱신
         refreshTimer += Time.deltaTime;
         int refreshSeconds = (int)(refreshTimer % 60);
         
@@ -94,6 +165,35 @@ public class SystemInit : MonoBehaviour
             refreshScores();
             refreshTimer = 0;
         }
+    }
+    protected void setScoreText(int score, int val){
+        GameObject obj = GameObject.Find("ScoreText" + val);
+        TMP_Text text = obj.GetComponent<TMP_Text>();
+        text.text = ""+score;
+    }
+
+    public void refreshTeamName(int  val, TMP_Text textBox){
+        GameObject obj = GameObject.Find("Team" + val + "InputField");
+        TMP_InputField teamNameInputField = obj.GetComponent<TMP_InputField>();
+        if (teamNameInputField == null) return;
+        //ShowTeamText(teamNameInputField.text);
+        textBox.text = teamNameInputField.text;
+    }
+    
+    public void ClearWinFailText()
+    {
+        winText.text = "";
+        seconds = 0;
+        timer = 0.0f;
+        winTextFlag = false;
+
+    }
+
+    void showWinFailText(string text){
+        winText.text = text;//winInputField.text;
+        seconds = 0;
+        timer = 0.0f;
+        winTextFlag = true;
     }
 
     void OnGUI()
@@ -121,10 +221,7 @@ public class SystemInit : MonoBehaviour
         {
             Debug.Log("Space key is pressed.");
             requestHandler.ClearTeamText();
-            winText.text = "";
-            seconds = 0;
-            timer = 0.0f;
-            winTextFlag = false;
+            ClearWinFailText();
         }
 
         if (Event.current.Equals(Event.KeyboardEvent(KeyCode.Alpha0.ToString()))||
@@ -132,10 +229,7 @@ public class SystemInit : MonoBehaviour
         {   
             Debug.Log("0 key is pressed.");
             requestHandler.ClearTeamText();
-            winText.text = failInputField.text;
-            seconds = 0;
-            timer = 0.0f;
-            winTextFlag = true;
+            showWinFailText(failInputField.text);
             noSound.Play();
         }
     
@@ -144,10 +238,7 @@ public class SystemInit : MonoBehaviour
         {
             Debug.Log("1 key is pressed.");
             requestHandler.ClearTeamText();
-            winText.text = winInputField.text;
-            seconds = 0;
-            timer = 0.0f;
-            winTextFlag = true;
+            showWinFailText(winInputField.text);
             okSound.Play();
         }
 
@@ -168,10 +259,10 @@ public class SystemInit : MonoBehaviour
         {
             string scoreText = File.ReadAllText(filePath);
             Debug.Log(scoreText);
-            JObject jsonObj = JObject.Parse(scoreText);
+            scoreJsonObj = JObject.Parse(scoreText);
 
             for(int i=0;i<4;i++){
-                int score = (int)jsonObj[""+(i+1)];
+                int score = (int)scoreJsonObj[""+(i+1)];
                 Debug.Log("score " +score);
             }
         }
