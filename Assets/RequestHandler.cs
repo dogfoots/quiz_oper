@@ -69,15 +69,22 @@ public class RequestHandler : MonoBehaviour
     public bool RequestProc(string key, string val)
     {
         if (key != "sig") return false;
-
         Debug.Log("sig in");
-        if (teamText.text.Trim() != "") return false;
 
         Debug.Log("val : "+val);
         GameObject obj = GameObject.Find("Team" + val + "InputField");
         if (obj == null) return false;
         TMP_InputField teamNameInputField = obj.GetComponent<TMP_InputField>();
         if (teamNameInputField == null) return false;
+
+        SystemInit systemInit = GameObject.Find("SystemInit").GetComponent<SystemInit>();
+        systemInit.AddTextEffect(teamNameInputField.text);
+        
+        if (teamText.text.Trim() != ""){
+            return false;
+        }
+
+        
         ShowTeamText(teamNameInputField.text);
 
         limitSeconds = System.Convert.ToInt32(delayInputField.text.Trim());

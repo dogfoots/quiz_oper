@@ -54,7 +54,7 @@ public class SystemInit : MonoBehaviour
         Application.runInBackground = true;
         unityMainThreadDispatcher.CreateInstance();
         effectGround =  GameObject.Find("EffectGround");
-
+        
         teamScoreView = GameObject.Find("TeamScores");
         
         teamScore1Grp = GameObject.Find("TeamScore1Grp");
@@ -99,7 +99,6 @@ public class SystemInit : MonoBehaviour
         obj = GameObject.Find("WinText");
         winText = obj.GetComponent<TMP_Text>();
 
-        AddTextEffect("hi!");
     }
 
 
@@ -169,17 +168,37 @@ public class SystemInit : MonoBehaviour
             refreshScores();
             refreshTimer = 0;
         }
+
+
+        effectTexts.ForEach(delegate(EffectText effectText){
+            effectText.update();
+        });
+
+        
+        effectTexts.RemoveAll(delegate(EffectText effectText){
+            return effectText.isDead;
+        });
     }
 
     class EffectText{
         GameObject gameObject = null;
+
+        Vector3 initPos = new Vector3(0, 0, 0);
+        Vector3 currentPower = new Vector3(0, 0, 0);
+        float firstPower = 0.0f;
+
+        //float mass = 3.0f;
+        public bool isDead = false;
+
+        int tick = 0;
 
         public void make(string text, GameObject effectGround, TMP_FontAsset effectFontTMP){
             gameObject = new GameObject("EffectText");
             gameObject.AddComponent<CanvasRenderer>();
             gameObject.AddComponent<TextMeshProUGUI>();
             gameObject.transform.parent = effectGround.transform;
-            gameObject.transform.position = new Vector3((Screen.width/2) + UnityEngine.Random.Range(-25.0f,25.0f), 100, 0);
+            initPos = new Vector3((Screen.width/2) + UnityEngine.Random.Range(-25.0f,25.0f), 100, 0);
+            gameObject.transform.position = initPos;
 
             TextMeshProUGUI tmp = gameObject.GetComponent<TextMeshProUGUI>();
             tmp.font = effectFontTMP;
@@ -187,12 +206,46 @@ public class SystemInit : MonoBehaviour
             tmp.fontSharedMaterial = effectFontTMP.material;
 
             gameObject.GetComponent<TMP_Text>().text = text;
+
+            //float rad = UnityEngine.Random.Range(-15.0f,15.0f) * Mathf.Deg2Rad;
+
+            Vector3 forceDirection = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-30.0f,30.0f)) * new Vector3(0, 1, 0);
+            firstPower = UnityEngine.Random.Range(1200.0f,1500.0f);
+
+            currentPower = forceDirection*firstPower;
+            isDead = false;
         }
+
+        public bool update(){
+            if(gameObject == null) return true;
+            if(tick > 500){
+                Destroy(gameObject);
+                isDead = true;
+                return false;
+            }
+
+            Vector3 gravityAcc = new Vector3(0, -1, 0) * 9.8f;
+            Vector3 initAcc = currentPower;///mass;
+
+            Vector3 deltaPos = (initAcc * tick) + (gravityAcc * tick * tick)/2;
+            gameObject.transform.position = initPos + (deltaPos/500.0f);
+
+
+            gameObject.GetComponent<CanvasRenderer>().SetAlpha(1.0f - (tick/300.0f));
+
+            tick++;
+            return true;
+        }
+
     }
+
+    List<EffectText> effectTexts = new List<EffectText>();
+
 
     public void AddTextEffect(string text){
         EffectText ef = new EffectText();
         ef.make(text, effectGround, effectFontTMP);
+        effectTexts.Add(ef);
     }
 
     protected void setScoreText(int score, int val){
@@ -278,6 +331,13 @@ public class SystemInit : MonoBehaviour
             Debug.Log("R key is pressed.");
             refreshScores();
         }
+
+
+        /*if (Event.current.Equals(Event.KeyboardEvent(KeyCode.T.ToString())))
+        {
+            AddTextEffect("hi!");
+        }*/
+        
     }
 
     void refreshScores(){
