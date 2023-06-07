@@ -140,7 +140,7 @@ public class HttpReceiver : MonoBehaviour
         listener.Prefixes.Add(url);
         listener.Prefixes.Add(url2);
         //listener.Prefixes.Add(url3);
-        listener.Prefixes.Add(url4);
+        //listener.Prefixes.Add(url4);
         listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
         listener.Start();
 
