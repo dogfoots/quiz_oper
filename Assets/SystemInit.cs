@@ -171,7 +171,7 @@ public class SystemInit : MonoBehaviour
 
 
         effectTexts.ForEach(delegate(EffectText effectText){
-            effectText.update();
+            effectText.update(Time.deltaTime);
         });
 
         
@@ -189,8 +189,7 @@ public class SystemInit : MonoBehaviour
 
         //float mass = 3.0f;
         public bool isDead = false;
-
-        int tick = 0;
+        public float timer = 0.0f;
 
         public void make(string text, GameObject effectGround, TMP_FontAsset effectFontTMP){
             gameObject = new GameObject("EffectText");
@@ -210,15 +209,17 @@ public class SystemInit : MonoBehaviour
             //float rad = UnityEngine.Random.Range(-15.0f,15.0f) * Mathf.Deg2Rad;
 
             Vector3 forceDirection = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-30.0f,30.0f)) * new Vector3(0, 1, 0);
-            firstPower = UnityEngine.Random.Range(1200.0f,1500.0f);
+            firstPower = UnityEngine.Random.Range(70.0f,80.0f);
 
             currentPower = forceDirection*firstPower;
             isDead = false;
+
+            timer = 0;
         }
 
-        public bool update(){
+        public bool update(float deltaTime){
             if(gameObject == null) return true;
-            if(tick > 500){
+            if(timer > 1.0f){
                 Destroy(gameObject);
                 isDead = true;
                 return false;
@@ -226,14 +227,15 @@ public class SystemInit : MonoBehaviour
 
             Vector3 gravityAcc = new Vector3(0, -1, 0) * 9.8f;
             Vector3 initAcc = currentPower;///mass;
+            float tick = timer*10.0f;
 
             Vector3 deltaPos = (initAcc * tick) + (gravityAcc * tick * tick)/2;
-            gameObject.transform.position = initPos + (deltaPos/500.0f);
+            gameObject.transform.position = initPos + (deltaPos);
 
 
-            gameObject.GetComponent<CanvasRenderer>().SetAlpha(1.0f - (tick/300.0f));
+            gameObject.GetComponent<CanvasRenderer>().SetAlpha(1.0f - (timer/1.0f));
 
-            tick++;
+            timer += deltaTime;
             return true;
         }
 
@@ -333,10 +335,10 @@ public class SystemInit : MonoBehaviour
         }
 
 
-        /*if (Event.current.Equals(Event.KeyboardEvent(KeyCode.T.ToString())))
+        if (Event.current.Equals(Event.KeyboardEvent(KeyCode.T.ToString())))
         {
             AddTextEffect("hi!");
-        }*/
+        }
         
     }
 
