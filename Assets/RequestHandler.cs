@@ -66,13 +66,33 @@ public class RequestHandler : MonoBehaviour
         teamTextOnFlag = true;
     }
 
+    public int teamNumFromSig(string val){
+        TMP_InputField obj1 = GameObject.Find("Sig1InputField").GetComponent<TMP_InputField>();
+        TMP_InputField obj2 = GameObject.Find("Sig2InputField").GetComponent<TMP_InputField>();
+        TMP_InputField obj3 = GameObject.Find("Sig3InputField").GetComponent<TMP_InputField>();
+        TMP_InputField obj4 = GameObject.Find("Sig4InputField").GetComponent<TMP_InputField>();
+
+        if(obj1.text.Trim() == val) return 1;
+        else if(obj2.text.Trim() == val) return 2;
+        else if(obj3.text.Trim() == val) return 3;
+        else if(obj4.text.Trim() == val) return 4;
+
+
+        return 0;
+    }
+
     public bool RequestProc(string key, string val)
     {
         if (key != "sig") return false;
-        Debug.Log("sig in");
+        Debug.Log("sig in : "+val);
 
-        Debug.Log("val : "+val);
-        GameObject obj = GameObject.Find("Team" + val + "InputField");
+        int teamNum = teamNumFromSig(val);
+        
+        if(teamNum == 0) return false;
+
+
+        Debug.Log("teamNum : " + teamNum);
+        GameObject obj = GameObject.Find("Team" + teamNum + "InputField");
         if (obj == null) return false;
         TMP_InputField teamNameInputField = obj.GetComponent<TMP_InputField>();
         if (teamNameInputField == null) return false;
