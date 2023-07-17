@@ -22,12 +22,17 @@ public class RequestHandler : MonoBehaviour
     TMP_Text teamText = null;
     public TMP_Text winText = null;
 
+    TMP_Text  timeOutText =null;
+
     AudioSource meSound=null;
     // Start is called before the first frame update
     void Start()
     {
         GameObject obj = GameObject.Find("TeamText");
         teamText = obj.GetComponent<TMP_Text>();
+
+        obj = GameObject.Find("TimeOutText");
+        timeOutText = obj.GetComponent<TMP_Text>();
 
         obj = GameObject.Find("MeSound");
         meSound = obj.GetComponent<AudioSource>();
@@ -48,7 +53,11 @@ public class RequestHandler : MonoBehaviour
             if (limitSeconds <= seconds)
             {
                 ClearTeamText();
+            }else{
+                
+                timeOutText.text = "" + (limitSeconds-seconds);
             }
+
         }
     }
 
@@ -58,6 +67,7 @@ public class RequestHandler : MonoBehaviour
         seconds = 0;
         teamText.text = "";
         teamTextOnFlag = false;
+        timeOutText.text = "";
     }
 
     public void ShowTeamText(string text){

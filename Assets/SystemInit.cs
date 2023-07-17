@@ -18,6 +18,7 @@ public class SystemInit : MonoBehaviour
     GameObject teamScore2Grp = null;
     GameObject teamScore3Grp = null;
     GameObject teamScore4Grp = null;
+    GameObject timeOutGrp = null;
 
     TMP_Text score1 = null;
     TMP_Text scoreTitle1 = null;
@@ -30,6 +31,8 @@ public class SystemInit : MonoBehaviour
     
     TMP_Text score4 = null;
     TMP_Text scoreTitle4 = null;
+
+
 
 
     GameObject settingDlg = null;
@@ -61,6 +64,8 @@ public class SystemInit : MonoBehaviour
         teamScore2Grp = GameObject.Find("TeamScore2Grp");
         teamScore3Grp = GameObject.Find("TeamScore3Grp");
         teamScore4Grp = GameObject.Find("TeamScore4Grp");
+
+        timeOutGrp = GameObject.Find("TimeOutGrp");
 
         scoreTitle1 = GameObject.Find("ScoreTitleText1").GetComponent<TMP_Text>();
         score1 = GameObject.Find("ScoreText1").GetComponent<TMP_Text>();
@@ -138,6 +143,10 @@ public class SystemInit : MonoBehaviour
             teamScore2Grp.transform.position = new Vector3(Screen.width, Screen.height, teamScore2Grp.transform.position.z);
             teamScore3Grp.transform.position = new Vector3(0, 0, teamScore3Grp.transform.position.z);
             teamScore4Grp.transform.position = new Vector3(Screen.width, 0, teamScore4Grp.transform.position.z);
+
+            timeOutGrp.transform.position = new Vector3(0, Screen.height, timeOutGrp.transform.position.z);
+
+            
             //Debug.Log("d : "+teamScoreView.GetComponent<RectTransform>().rect.width);
             //Debug.Log("d : "+teamScore1Grp.transform.position);
             
